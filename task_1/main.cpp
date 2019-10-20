@@ -4,6 +4,7 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <exception>
 
 std::string read_till_comma(std::istringstream& iss){
     std::string answr;
@@ -32,7 +33,12 @@ std::tuple<args...> parse_line(std::istringstream& iss){
 }
 
 template<typename... args>
-std::vector<std::tuple<args...>> csv_read(std::ifstream& inpfile){
+std::vector<std::tuple<args...>> ReadCSV(const std::string& filename){
+    std::ifstream inpfile(filename);
+    if(!inpfile.is_open()){
+        std::cout << "Error while opening file test.csv" << std::endl;
+        std::terminate();
+    }
     std::string buffer_line;
     std::vector<std::tuple<args...>> ret_arr;
     if (inpfile.is_open()) {
@@ -46,12 +52,7 @@ std::vector<std::tuple<args...>> csv_read(std::ifstream& inpfile){
 }
 
 int main(){
-    std::ifstream fin("test.csv");
-    if(!fin.is_open()){
-        std::cout << "Error while opening file test.csv" << std::endl;
-        return 1;
-    }
-    auto data = csv_read<int, std::string, double>(fin);
+    auto data = ReadCSV<int, std::string, double>("test.csv");
     for(auto& tup : data){
         std::cout << std::get<0>(tup) << '\t';
         std::cout << std::get<1>(tup) << '\t';
